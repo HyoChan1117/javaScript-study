@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn1" onclick="changeToRed.call(this)">ON</button>
+    <button id="btn2">ON</button>
+
+<script>
+    function changeToRed() {
+        // this를 상황에 따라서 
+        this.style.backgroundColor = "red";
+    }
+
+    /* const btn1 = document.getElementById('btn1');
+       // 
+       btn1.addEventListener("click", changeToRed); */
+
+    const btn2 = document.getElementById('btn2');
+    
+    // button 객체의 메서드
+    btn2.onclick = changeToRed;
+
+
+</script>
+</body>
+</html>

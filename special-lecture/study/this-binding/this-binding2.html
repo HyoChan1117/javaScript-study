@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+    // this 바인딩 규칙
+    // 1. 일반 함수 호출
+    // 함수가 호출됐을 때,
+    // - html : window 객체
+    // - js : undefined
+    // 2. Method 호출
+    // 3. apply, call, bind
+    // 4. new 호출
+    // 5. Event Handler
+
+    function bar() {
+        // bar()는 “그냥 함수 호출”이라서 원래 this가 없다고 생각하기 쉬운데
+        // 브라우저에서는 일반 함수 호출의 this가 자동으로 window로 바인딩되기
+        // 때문에 에러가 안 나고, window(= HTML 전역 객체)가 찍힘
+        console.log(this);
+
+        function foo() {
+            console.log(this);
+        }
+
+        foo();  // this -> window
+    }
+
+    bar();  // this -> window
+</script>
+
+</body>
+</html>

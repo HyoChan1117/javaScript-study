@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    print = console.log;
+    // windows 객체에 붙음
+    // var -> scope unit: function
+    { var bar = "gsc"; }
+    print(bar);
+    // windows 객체에 붙지 않아서 windows 객체를 더럽히지 않음
+    // let -> scope unit: block
+    { let foo = "yju"; }
+    print(foo);
+</script>
+</body>
+</html>

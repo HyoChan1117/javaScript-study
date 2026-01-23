@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="number" id="input_value" placeholder="Put numbers">
+    <button id="add_btn" onclick="add()">Add</button>
+<script>
+    let total = 0;
+
+    // Event handler
+    // 1. 이름이 있는 함수 정의
+    function add() {
+        const input = document.getElementById("input_value").value;
+
+        const prev = total
+        total += Number(input)
+
+        alert("Previous: " + prev + ", Current: " + total)
+        
+        // previous value + current value
+
+        // show result
+
+    }
+</script>
+</body>
+</html>
+
+<!--
+어떠한 Source에 어떠한 이벤트를 사용할 것인지에 대한 정리가 필요
+정리 안에서는 해당 이벤트가 일어났을 때 해야하는지 액션을 기술하고
+함수나 클래스 설계가 들어가야 하고, 안에 
+
+이벤트 드리븐 프로그램
+1) 이벤트 소스
+2) 이벤트 리스너
+3) 이벤트 핸들러
+-->
