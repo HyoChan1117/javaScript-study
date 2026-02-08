@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Whack-a-Mole</title>
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    .mole {
+      background: gold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>두더지 잡기 게임</h2>
+<div>점수: <span id="score">0</span></div>
+<button id="startBtn">게임 시작</button>
+
+<div class="board" id="board"></div>
+
+<script>
+  const board = document.getElementById("board");
+  const scoreEl = document.getElementById("score");
+  const startBtn = document.getElementById("startBtn");
+
+  let score = 0;
+  let timer = null;
+  let currentIndex = -1;
+
+  // 1. 보드 생성 (DOM Create)
+  for (let i = 0; i < 9; i++) {
+    const div = document.createElement("div");
+    div.className = "cell";
+    div.dataset.index = i;
+    board.appendChild(div);
+  }
+
+  // 보드 생성 후 cell 가져오기
+  const cells = document.querySelectorAll(".cell");
+
+  // 2. 랜덤 두더지 등장
+  function showMole() {
+    // 모든 셀에서 두더지 제거
+    cells.forEach((c) => {
+      c.classList.remove("mole");
+      c.textContent = "";
+    });
+
+    // 랜덤 인덱스 뽑기
+    const rand = Math.floor(Math.random() * cells.length);
+
+    // 랜덤 셀에 두더지 표시
+    cells[rand].classList.add("mole");
+    cells[rand].textContent = "🐹";
+
+    // 현재 위치 저장
+    currentIndex = rand;
+  }
+
+  // 3. 클릭 이벤트 처리
+  cells.forEach((cell) => {
+    // 각 셀에 클릭 이벤트 리스너 추가
+    cell.addEventListener("click", () => {
+      // 클릭한 셀의 인덱스가 현재 두더지 위치와 일치하는지 확인
+      if (Number(cell.dataset.index) === currentIndex) {
+        // 점수 증가
+        score++;
+        scoreEl.textContent = score;
+      }
+    });
+  });
+
+  // 4. 게임 시작 버튼
+  startBtn.addEventListener("click", () => {
+    // 이미 게임이 진행 중이면 종료
+    if (timer) return;
+
+    // 점수 초기화
+    score = 0;
+    scoreEl.textContent = score;
+
+    // 0.8초마다 두더지 등장
+    timer = setInterval(showMole, 800);
+
+    // 10초 후 게임 종료
+    setTimeout(() => {
+      clearInterval(timer);
+      timer = null;
+      alert("게임 종료! 점수: " + score);
+    }, 10000);
+  });
+</script>
+
+</body>
+</html>

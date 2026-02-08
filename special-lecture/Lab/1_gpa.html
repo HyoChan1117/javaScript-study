@@ -84,19 +84,34 @@
 
 <script>
 function calculate() {
+    // [문제]
+    // 1. 1번 ~ 5번 학생의 국어, 영어, 수학 점수를 읽어온다.
+    // 2. 각 학생의 총점을 계산하여 total1 ~ total5에 출력한다.
+    // 3. 각 학생의 평균을 계산하여 avg1 ~ avg5에 출력한다.
+    // 4. 5명 학생 평균의 평균을 계산하여 classAvg에 출력한다.
+    let avg_total = 0;
 
-    /*
-    [문제]
-    1. 1번 ~ 5번 학생의 국어, 영어, 수학 점수를 읽어온다.
-    2. 각 학생의 총점을 계산하여 total1 ~ total5에 출력한다.
-    3. 각 학생의 평균을 계산하여 avg1 ~ avg5에 출력한다.
-    4. 5명 학생 평균의 평균을 계산하여 classAvg에 출력한다.
+    for (let i = 1; i <= 5; i++) {
+        // i번째 학생의 국어, 영어, 수학 성적
+        let kor = Number(document.getElementById("kor" + i).value);
+        let eng = Number(document.getElementById("eng" + i).value);
+        let math = Number(document.getElementById("math" + i).value);
 
-    ※ 힌트:
-    - document.getElementById("kor1").value
-    - Number() 또는 parseInt() 사용
-    */
+        // i번째 학생의 총점
+        document.getElementById("total" + i).value = kor + eng + math;
 
+        // i번째 학생의 평균
+        document.getElementById("avg" + i).value = document.getElementById("total" + i).value / 3
+
+        // 모든 학생의 평균을 더한 값을 반환
+        avg_total += Number(document.getElementById("avg" + i).value);
+    }
+
+    document.getElementById("classAvg").value = avg_total / 5;
+
+    // ※ 힌트:
+    // - document.getElementById("kor1").value
+    // - Number() 또는 parseInt() 사용
 }
 </script>
 

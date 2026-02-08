@@ -49,79 +49,50 @@
   </form>
 
   <script>
-    // =========================
-    // TODO 1) 필요한 DOM 요소 가져오기
-    // =========================
-    // 입력값
-    const a = document.getElementById("a");
-    const b = document.getElementById("b");
-
-    // 버튼
+    // DOM 요소 가져오기
     const btnCalc = document.getElementById("btnCalc");
     const btnReset = document.getElementById("btnReset");
 
-    // 출력
-    const outAdd = document.getElementById("outAdd");
-    const outSub = document.getElementById("outSub");
-    const outMul = document.getElementById("outMul");
-    const outDiv = document.getElementById("outDiv");
+    // 계산 버튼 이벤트
+    function calculate() {
+      const a = Number(document.getElementById("a").value);
+      const b = Number(document.getElementById("b").value);
 
-    // 한 번에 에러 처리를 하거나, 초기화할 때 사용하는 함수
-    function setValue(value) {
-      btnCalc.value = value;
-      btnReset.value = value;
-      outAdd.value = value;
-      outSub.value = value;
-      outMul.value = value;
-      outDiv.value = value;
-    }
+      // a, b가 숫자가 아닌 경우
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        document.getElementById("outAdd").value = "Error";
+        document.getElementById("outSub").value = "Error";
+        document.getElementById("outMul").value = "Error";
+        document.getElementById("outDiv").value = "Error";
 
-    // =========================
-    // TODO 2) 계산 버튼 이벤트 처리
-    // - a,b를 Number로 변환
-    // - 숫자 아니면 ERROR 처리
-    // - b==0이면 div만 DIV/0
-    // =========================
-    function handleCalculate() {
-      // 입력값을 Number로 변환
-      const numA = Number(a.value);
-      const numB = Number(b.value);
-
-      // 입력값이 숫자가 아닐 경우, "ERROR" 처리
-      if (!Number.isFinite(numA) && !Number.isFinite(numB)) {
-        setValue("ERROR");
+        return;
       }
 
-      // 입력값 b가 0일 경우, div 연산에서만 "DIV/0" 처리
-      // 0이 아닐 경우는 그대로 계산하여 출력
-      if (numB == 0) {
-        outDiv.value = "DIV/0";
+      // a, b가 숫자인 경우
+      document.getElementById("outAdd").value = a + b;
+      document.getElementById("outSub").value = a - b;
+      document.getElementById("outMul").value = a * b;
+      // b가 0일 경우
+      if (b == 0) {
+        document.getElementById("outDiv").value = "DIV/0"
       } else {
-        outDiv.value = numA / numB;
+        document.getElementById("outDiv").value = a / b;
       }
-
-      // 계산 결과
-      outAdd.value = numA + numB;
-      outSub.value = numA - numB;
-      outMul.value = numA * numB;
-      outDiv.value = numA / numB;
     }
 
-    // =========================
-    // TODO 3) 리셋 버튼 이벤트 처리
-    // - 입력 2개 + 결과 4개 전부 "" 로
-    // =========================
-    function handleReset() {
-      a.value = "";
-      b.value = "";
-      setValue("");
+    // 리셋 버튼 이벤트
+    function reset() {
+      document.getElementById("a").value = "";
+      document.getElementById("b").value = "";
+      document.getElementById("outAdd").value = "";
+      document.getElementById("outSub").value = "";
+      document.getElementById("outMul").value = "";
+      document.getElementById("outDiv").value = "";
     }
 
-    // =========================
-    // TODO 4) 버튼에 이벤트 연결
-    // =========================
-    btnCalc.addEventListener("click", handleCalculate);
-    btnReset.addEventListener("click", handleReset);
+    // 이벤트 연결
+    btnCalc.addEventListener("click", calculate);
+    btnReset.addEventListener("click", reset);
   </script>
 </body>
 </html>
