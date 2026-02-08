@@ -37,11 +37,12 @@
 
       // li 요소 생성하기
       const li = document.createElement("li");
-      const btnMod = document.createElement("button");
-      const btnDel = document.createElement("button");
-
       // li.textContext에 입력 받은 txt 값 저장
       li.textContent = txt + " ";
+
+      // button 요소 생성하기
+      const btnMod = document.createElement("button");
+      const btnDel = document.createElement("button");
 
       // button 요소 이름 저장
       btnMod.textContent = "수정";
@@ -54,12 +55,36 @@
       li.appendChild(btnMod);
       li.appendChild(btnDel);
 
+      // 수정 기능
+      btnMod.addEventListener("click", function() {
+        const newTxt = prompt("수정할 내용을 입력하세요", li.firstChild.textContent.trim());
+        if (newTxt) {
+          li.firstChild.textContent = newTxt + " ";
+        }
+      })
+
+      // 삭제 기능
+      btnDel.addEventListener("click", function(e) {
+        const li = e.target.parentNode;
+        list.removeChild(li);
+      });
+
       // input.value 초기화
       input.value = "";
+
+      // input 요소에 포커스 주기
+      input.focus();
     }
 
     // 이벤트 리스너 생성
     btnAdd.addEventListener("click", add);
+
+    // Enter 키로도 추가 기능 실행
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        add();
+      }
+    });
   </script>
 </body>
 </html>
