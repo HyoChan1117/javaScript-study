@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do List</title>
+</head>
+<body>
+  <!-- To-do List 기본 틀 -->
+  <h1>To-do List</h1>
+  <input type="text" id="txt">
+  <button id="btnAdd">추가</button><br><br>
+  <input type="radio" id="filter" name="filter" value="all" checked>전체
+  <input type="radio" id="filter" name="filter" value="complete">완료
+  <input type="radio" id="filter" name="filter" value="ing">진행
+
+  <hr>
+
+  <ul id="list"></ul>
+
+<script>
+  // DOM 요소 가져오기
+  const txt = document.getElementById("txt");
+  const btnAdd = document.getElementById("btnAdd");
+  const filters = document.querySelectorAll('input[name="filter"]');
+  const list = document.getElementById("list");
+
+  // add 이벤트 함수
+  function add() {
+    // DOM 요소 가져오기
+    const input = txt.value;
+
+    // input이 빈 문자열일 경우
+    // add 이벤트 종료
+    if (input === "") return;
+
+    // button 요소 생성
+    const btnMod = document.createElement("button");
+    const btnDel = document.createElement("button");
+    btnMod.textContent = "수정";
+    btnDel.textContent = "삭제";
+
+    // li 요소 생성
+    const li = document.createElement("li");
+
+    // checkbox 생성 및 속성 변경 및 저장
+    const checkbox = document.createElement("input");
+    checkbox.setAttribute("type", "checkbox");
+    li.appendChild(checkbox);
+
+    // checkbox 이벤트 추가
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        span.style.textDecoration = "line-through";
+        span.style.color = "gray";
+      } else {
+        span.style.textDecoration = "none";
+        span.style.color = "black";
+      }
+    });
+
+    // span 생성 후 textContent에 input 저장
+    const span = document.createElement("span");
+    span.textContent = input + " ";
+    li.appendChild(span);
+
+    // 수정, 삭제 버튼 추가
+    li.append(btnMod, btnDel);
+    
+    // list 요소의 자식 요소로 저장
+    list.appendChild(li);
+
+    // txt.value 초기화
+    txt.value = "";
+
+    // txt.focus() -> 리스트 추가한 후 바로 입력할 수 있게!
+    txt.focus();
+
+    // 수정 기능
+    btnMod.addEventListener("click", () => {
+      const mod = prompt("수정할 내용을 입력해 주세요.");
+
+      // mod가 빈 값일 경우
+      // 수정 종료
+      if (!mod) return;
+      span.textContent = mod + " ";
+    });
+
+    // 삭제 기능
+    btnDel.addEventListener("click", () => {
+      const ok = confirm("정말 삭제하시겠습니까?");
+      if (!ok) {
+        return;
+      }
+      li.remove();
+    });
+  }
+
+  // filter 이벤트
+  function applyFilter() {
+    const selected = document.querySelector('input[name="filter"]:checked').value;
+    const items = list.querySelectorAll("li");
+
+    // 각 li 요소를 순회하며 필터 적용
+    items.forEach(li => {
+        const checkbox = li.querySelector('input[type="checkbox"]');
+        const isChecked = checkbox.checked;
+
+        // 필터 조건에 따라 li 요소 표시 여부 결정
+        if (selected === "all") {
+            li.style.display = "";
+        } else if (selected === "complete") {
+            li.style.display = isChecked ? "" : "none";
+        } else if (selected === "ing") {
+            li.style.display = !isChecked ? "" : "none";
+        }
+    });
+  }
+
+  // 필터 이벤트 핸들러 생성
+  filters.forEach(radio => {
+    radio.addEventListener("change", applyFilter);
+  });
+
+  // 이벤트 핸들러 생성
+  // 추가 버튼 클릭 시 add 이벤트 실행
+  btnAdd.addEventListener("click", add);
+
+  // 엔터 키 입력 시 add 이벤트 실행
+  txt.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        add();
+    }
+  })
+
+</script>
+</body>
+</html>

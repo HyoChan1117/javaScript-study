@@ -217,17 +217,19 @@
         * ║  6. 템플릿 리터럴을 활용한 HTML 생성                              ║
         * ╚══════════════════════════════════════════════════════════════════╝
         */
-
+        // 할 일 관리 객체
         const todoApp = {
             todos: [],
             currentFilter: 'all',
 
+            // 앱 초기화
             init() {
                 this.loadFromStorage();
                 this.bindEvents();
                 this.render();
             },
 
+            // 이벤트 바인딩
             bindEvents() {
                 /*
                 * TODO: 추가 버튼 클릭 이벤트
@@ -274,31 +276,23 @@
             addTodo() {
                 const input = document.getElementById('todoInput');
 
-                /*
-                * TODO: 입력값 가져오기
-                */
+                // TODO: 입력값 가져오기
                 const text = input.value.trim();
 
-                /*
-                * TODO: 빈 값 체크
-                */
+                // TODO: 빈 값 체크
                 if (text === '') {
                     alert('할 일을 입력해주세요!');
                     return;
                 }
 
-                /*
-                * TODO: 새 할 일 객체 생성
-                */
+                // TODO: 새 할 일 객체 생성
                 const newTodo = {
                     id: Date.now(),
                     text: text,
                     completed: false
                 };
 
-                /*
-                * TODO: 배열에 추가
-                */
+                // TODO: 배열에 추가
                 this.todos.push(newTodo);
 
                 input.value = '';
@@ -309,14 +303,10 @@
             },
 
             toggleTodo(id) {
-                /*
-                * TODO: id로 할 일 찾기
-                */
+                // TODO: id로 할 일 찾기
                 const todo = this.todos.find(t => t.id === id);
 
-                /*
-                * TODO: 완료 상태 반전
-                */
+                // TODO: 완료 상태 반전
                 if (todo) {
                     todo.completed = !todo.completed;
                 }
@@ -326,9 +316,7 @@
             },
 
             deleteTodo(id) {
-                /*
-                * TODO: 해당 id를 제외한 나머지만 필터링
-                */
+                // TODO: 해당 id를 제외한 나머지만 필터링
                 this.todos = this.todos.filter(t => t.id !== id);
 
                 this.saveToStorage();
@@ -336,14 +324,10 @@
             },
 
             setFilter(filter) {
-                /*
-                * TODO: 현재 필터 상태 변경
-                */
+                // TODO: 현재 필터 상태 변경
                 this.currentFilter = filter;
 
-                /*
-                * TODO: 필터 버튼 활성화 표시 변경
-                */
+                // TODO: 필터 버튼 활성화 표시 변경
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.filter === filter);
                 });
@@ -352,9 +336,7 @@
             },
 
             getFilteredTodos() {
-                /*
-                * TODO: 필터에 따라 다른 목록 반환
-                */
+                // TODO: 필터에 따라 다른 목록 반환
                 switch (this.currentFilter) {
                     case 'active':
                         return this.todos.filter(t => !t.completed);
@@ -369,18 +351,14 @@
                 const list = document.getElementById('todoList');
                 const filteredTodos = this.getFilteredTodos();
 
-                /*
-                * TODO: 목록이 비어있으면 안내 메시지 표시
-                */
+                // TODO: 목록이 비어있으면 안내 메시지 표시
                 if (filteredTodos.length === 0) {
                     list.innerHTML = '<li class="empty-message">할 일이 없습니다.</li>';
                     this.updateStats();
                     return;
                 }
 
-                /*
-                * TODO: 할 일 목록을 HTML로 변환하여 표시
-                */
+                // TODO: 할 일 목록을 HTML로 변환하여 표시
                 list.innerHTML = filteredTodos.map(todo => `
                     <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
                         <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
@@ -402,16 +380,12 @@
             },
 
             saveToStorage() {
-                /*
-                * TODO: todos 배열을 로컬 스토리지에 저장
-                */
+                // TODO: todos 배열을 로컬 스토리지에 저장
                 localStorage.setItem('todos', JSON.stringify(this.todos));
             },
 
             loadFromStorage() {
-                /*
-                * TODO: 로컬 스토리지에서 데이터 불러오기
-                */
+                // TODO: 로컬 스토리지에서 데이터 불러오기
                 const saved = localStorage.getItem('todos');
                 if (saved) {
                     this.todos = JSON.parse(saved);
