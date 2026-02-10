@@ -1,287 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-do List</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f0f2f5;
-        display: flex;
-        justify-content: center;
-        padding: 40px 20px;
-        min-height: 100vh;
-      }
-
-      body {
-        flex-direction: column;
-        align-items: center;
-        max-width: 500px;
-        margin: 0 auto;
-      }
-
-      h1 {
-        color: #2c3e50;
-        margin-bottom: 24px;
-        font-size: 2rem;
-        letter-spacing: -0.5px;
-      }
-
-      input[type="text"] {
-        flex: 1;
-        width: 100%;
-        padding: 10px 14px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 15px;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-
-      input[type="text"]:focus {
-        border-color: #3498db;
-      }
-
-      #btnAdd {
-        padding: 10px 20px;
-        margin-left: 8px;
-        background: #3498db;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      #btnAdd:hover {
-        background: #2980b9;
-      }
-
-      input[type="radio"] {
-        margin: 16px 4px 16px 12px;
-        accent-color: #3498db;
-        cursor: pointer;
-      }
-
-      hr {
-        width: 100%;
-        max-width: 460px;
-        border: none;
-        border-top: 1px solid #ddd;
-        margin: 8px 0 16px;
-      }
-
-      ul {
-        list-style: none;
-        width: 100%;
-        max-width: 460px;
-      }
-
-      ul li {
-        display: flex;
-        align-items: center;
-        background: #fff;
-        padding: 12px 14px;
-        margin-bottom: 8px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        transition: box-shadow 0.2s;
-      }
-
-      ul li:hover {
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-      }
-
-      ul li input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        margin-right: 10px;
-        accent-color: #27ae60;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-
-      ul li span {
-        flex: 1;
-        font-size: 15px;
-        color: #2c3e50;
-        transition: color 0.2s, text-decoration 0.2s;
-      }
-
-      ul li button {
-        padding: 5px 12px;
-        margin-left: 6px;
-        border: none;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
-        flex-shrink: 0;
-      }
-
-      ul li button:first-of-type {
-        background: #f0f0f0;
-        color: #555;
-      }
-
-      ul li button:first-of-type:hover {
-        background: #e67e22;
-        color: #fff;
-      }
-
-      ul li button:last-of-type {
-        background: #f0f0f0;
-        color: #555;
-      }
-
-      ul li button:last-of-type:hover {
-        background: #e74c3c;
-        color: #fff;
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-do List</title>
 </head>
 <body>
-  <!-- To-do List 기본 틀 -->
   <h1>To-do List</h1>
-  <div style="display:flex; gap:8px; width:100%; max-width:460px;">
-    <input type="text" id="txt">
-    <button id="btnAdd">추가</button>
-  </div>
-  <div style="display:flex; gap:4px; align-items:center;">
-    <input type="radio" name="filter" value="all" checked>전체
-    <input type="radio" name="filter" value="complete">완료
-    <input type="radio" name="filter" value="ing">진행
-  </div>
-
-  <hr>
+  <input type="text" id="txt">
+  <button id="btnAdd">추가</button>
+  <br><br>
+  <input type="radio" name="filter" id="filter" value="all" checked> 전체
+  <input type="radio" name="filter" id="filter" value="ing"> 진행중
+  <input type="radio" name="filter" id="filter" value="conplete"> 완료
 
   <ul id="list"></ul>
 
-<script>
-  // DOM 요소 가져오기
-  const txt = document.getElementById("txt");
-  const btnAdd = document.getElementById("btnAdd");
-  const filters = document.querySelectorAll('input[name="filter"]');
-  const list = document.getElementById("list");
-
-  // add 이벤트 함수
-  function add() {
+  <script>
     // DOM 요소 가져오기
-    const input = txt.value;
+    const txt = document.getElementById("txt");
+    const btnAdd = document.getElementById("btnAdd");
+    const list = document.getElementById("list");
 
-    // input이 빈 문자열일 경우
-    // add 이벤트 종료
-    if (input === "") return;
+    // add 이벤트
+    function add() {
+      // txt.value 요소 가져오기
+      const input = txt.value;
 
-    // button 요소 생성
-    const btnMod = document.createElement("button");
-    const btnDel = document.createElement("button");
-    btnMod.textContent = "수정";
-    btnDel.textContent = "삭제";
+      // 수정, 삭제 button 요소 생성하기
+      const btnMod = document.createElement("button");
+      const btnDel = document.createElement("button");
+      btnMod.textContent = "수정";
+      btnDel.textContent = "삭제";
 
-    // li 요소 생성
-    const li = document.createElement("li");
-
-    // checkbox 생성 및 속성 변경 및 저장
-    const checkbox = document.createElement("input");
-    checkbox.setAttribute("type", "checkbox");
-    li.appendChild(checkbox);
-
-    // checkbox 이벤트 추가
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        span.style.textDecoration = "line-through";
-        span.style.color = "gray";
-      } else {
-        span.style.textDecoration = "none";
-        span.style.color = "black";
-      }
-    });
-
-    // span 생성 후 textContent에 input 저장
-    const span = document.createElement("span");
-    span.textContent = input + " ";
-    li.appendChild(span);
-
-    // 수정, 삭제 버튼 추가
-    li.append(btnMod, btnDel);
-    
-    // list 요소의 자식 요소로 저장
-    list.appendChild(li);
-
-    // txt.value 초기화
-    txt.value = "";
-
-    // txt.focus() -> 리스트 추가한 후 바로 입력할 수 있게!
-    txt.focus();
-
-    // 수정 기능
-    btnMod.addEventListener("click", () => {
-      const mod = prompt("수정할 내용을 입력해 주세요.");
-
-      // mod가 빈 값일 경우
-      // 수정 종료
-      if (!mod) return;
-      span.textContent = mod + " ";
-    });
-
-    // 삭제 기능
-    btnDel.addEventListener("click", () => {
-      const ok = confirm("정말 삭제하시겠습니까?");
-      if (!ok) {
+      // input이 빈 값일 경우 add 함수 종료
+      if (!input) {
+        alert("할 일을 입력해 주세요!");
         return;
       }
-      li.remove();
-    });
-  }
+      // li, checkbox, span 요소 생성하기
+      const li = document.createElement("li");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      const span = document.createElement("span");
 
-  // filter 이벤트
-  function applyFilter() {
-    const selected = document.querySelector('input[name="filter"]:checked').value;
-    const items = list.querySelectorAll("li");
+      // input 값을 span 요소에 저장하기
+      span.textContent = input + " ";
 
-    // 각 li 요소를 순회하며 필터 적용
-    items.forEach(li => {
-        const checkbox = li.querySelector('input[type="checkbox"]');
-        const isChecked = checkbox.checked;
+      // checkbox, span 요소를 li의 자식 요소에 추가
+      // btnMod, btnDel 요소도 li의 자식 요소에 추가
+      li.append(checkbox, span);
+      li.append(btnMod, btnDel);
 
-        // 필터 조건에 따라 li 요소 표시 여부 결정
-        if (selected === "all") {
-            li.style.display = "";
-        } else if (selected === "complete") {
-            li.style.display = isChecked ? "" : "none";
-        } else if (selected === "ing") {
-            li.style.display = !isChecked ? "" : "none";
+      // li 요소를 list 요소의 자식으로 추가하기
+      list.append(li);
+
+      // 수정 이벤트
+      btnMod.addEventListener("click", () => {
+        const mod = prompt("수정할 내용을 입력해 주세요.");
+        // mod가 빈 값일 경우 수정 에러 메시지 출력
+        if (mod.length === 0) {
+          alert("빈 값은 입력할 수 없습니다.");
+          return;
+        } 
+
+        // li의 span 요소 수정하기
+        li.querySelector("span").textContent = mod + " ";
+      });
+
+      // 삭제 이벤트
+      btnDel.addEventListener("click", () => {
+        // 삭제 여부 묻기
+        const ok = confirm("정말 삭제하시겠습니까?");
+        if (!ok) return;
+        li.remove();
+        checkEmpty()
+      });
+
+      // checkbox 체크 여부
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          span.style.color = "gray";
+          span.style.textDecoration = "line-through";
+        } else {
+          span.style.color = "black";
+          span.style.textDecoration = "none";
         }
-    });
-  }
+      });
 
-  // 필터 이벤트 핸들러 생성
-  filters.forEach(radio => {
-    radio.addEventListener("change", applyFilter);
-  });
+      // txt.value 초기화
+      txt.value = "";
 
-  // 이벤트 핸들러 생성
-  // 추가 버튼 클릭 시 add 이벤트 실행
-  btnAdd.addEventListener("click", add);
+      // txt.focus() -> 추가 후에 바로 입력창을 사용할 수 있도록
+      txt.focus();
 
-  // 엔터 키 입력 시 add 이벤트 실행
-  txt.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        add();
+      checkEmpty();
     }
-  })
 
-</script>
+    // 이벤드 핸들러 생성
+    btnAdd.addEventListener("click", add);
+    txt.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") add();
+    });
+
+    const p = document.createElement("p");
+    p.textContent = "할 일이 없습니다.";
+    document.body.append(p);
+
+    // To-do가 하나도 없을 경우
+    function checkEmpty() {
+      p.style.display = list.children.length === 0 ? "block" : "none" ;
+    }
+  </script>
 </body>
 </html>
