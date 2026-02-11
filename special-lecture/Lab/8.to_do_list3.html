@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-do List</title>
+</head>
+<body>
+  <h2>To-do List</h2>
+
+  <!-- 사용자 선택 드롭다운 + 새 사용자 추가 입력 -->
+  <div style="margin-bottom: 10px;">
+    <label>사용자: <select id="userSelect"></select></label>
+    <input type="text" id="userIdInput" placeholder="새 user_id (예: default)" />
+    <button id="btnAddUser">사용자 추가</button>
+  </div>
+
+  <!-- 할 일 입력 + 추가 버튼 -->
+  <input type="text" id="txt" placeholder="할 일을 입력해 주세요.">
+  <button id="btnAdd">추가</button>
+
+  <br><br>
+
+  <!-- 필터: 전체 / 진행중 / 완료 -->
+  <input type="radio" name="filter" value="all" checked> 전체
+  <input type="radio" name="filter" value="ing"> 진행중
+  <input type="radio" name="filter" value="complete"> 완료
+
+  <hr>
+
+  <!-- 할 일 목록이 렌더링될 영역 -->
+  <ul id="list"></ul>
+
+  <script>
+    // 서버 API 기본 주소
+    const API = "http://localhost:5000/api/todo";
+
+    // DOM 요소 가져오기
+    const txt = document.getElementById("txt");
+    const btnAdd = document.getElementById("btnAdd");
+    const list = document.getElementById("list");
+    const filters = document.querySelectorAll("input[name='filter']");
+    const userSelect = document.getElementById("userSelect");
+    const userIdInput = document.getElementById("userIdInput");
+    const btnAddUser = document.getElementById("btnAddUser");
+
+    // 현재 선택된 사용자 ID
+    let currentUserId = "default";
+
+    // 헬퍼 함수: HTTP 요청 보내기
+    // path: API 경로
+    // method: "GET", "POST", "PATCH", "DELETE"
+    // body: JS 객체 - JSON으로 변환되어 전송
+    async function request(path, method = "GET", body = null) {
+      // fetch에 넘길 옵션 객체 구성
+      const options = {
+        headers: { "Content-Type": "application/json" },
+        method
+      };
+      // body가 있을 때만 JSON 문자열로 변환해서 추가
+      if (body) {
+        options.body = JSON.stringify(body);
+      }
+
+      // 실제 HTTP 요청 실행
+      const res = await fetch(`${API}${path}`, options);
+
+      // 응답이 실패(4xx, 5xx)면 에러를 던짐
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`${res.status} ${res.statusText}`);
+      }
+
+      // 응답이 JSON이 아니면 null 반환
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) return null;
+
+      // JSON 응답을 파싱해서 JS 객체로 반환
+      return res.json();
+    }
+
+    // API 함수
+    // GET /api/todo/users
+    // 사용자 ID와 해당 사용자의 todo 개수를 딕셔너리로 반환
+    function apiGetUsers() {
+      return request("/users");
+    }
+
+    // GET /api/todo/{userId}/todos
+    // 해당 사용자의 todo 배열 반환
+    function apiGetTodos(userId) {
+      return request(`/${encodeURIComponent(userId)}/todos`);
+    }
+
+    // POST /api/todo/{userId}/todos
+    // todo 추가
+    function apiAddTodo(userId, text) {
+      return request(`/${encodeURIComponent(userId)}/todos`, "POST", { text });
+    }
+
+    // PATCH /api/todo/{userId}/todos/{todoId}
+    // todo 수정
+    function apiUpdateTodo(userId, todoId, patch) {
+      return request(`/${encodeURIComponent(userId)}/todos/${todoId}`, "PATCH", patch);
+    }
+
+    // DELETE /api/todo/{userId}/todos/{todoId}
+    // todo 삭제
+    function apiDeleteTodo(userId, todoId) {
+      return request(`/${encodeURIComponent(userId)}/todos/${todoId}`, "DELETE");
+    }
+
+    // 사용자 목록 렌더링
+    function renderUsers(userDict) {
+      // 기존 옵션 전부 삭제
+      userSelect.innerHTML = "";
+
+      // { alice: 3, bob: 1 } → [ ["alice", 3], ["bob", 1] ] 형태로 변환
+      const users = Object.entries(userDict || {});
+      // 서버에 사용자가 아무도 없으면 기본값 "default" 추가
+      if (users.length === 0) users.push(["default", 0]);
+
+      // 각 사용자를 <option value="alice">alice (3)</option> 형태로 추가
+      users.forEach(([uid, count]) => {
+        const opt = document.createElement("option");
+        opt.value = uid;
+        opt.textContent = `${uid} (${count})`;
+        userSelect.appendChild(opt);
+      });
+
+      // 현재 선택된 사용자가 목록에 있으면 그대로 유지
+      if ([...userSelect.options].some(o => o.value === currentUserId)) {
+        userSelect.value = currentUserId;
+      } else {
+        // 없으면 첫 번째 사용자로 변경
+        userSelect.value = userSelect.options[0].value;
+        currentUserId = userSelect.value;
+      }
+    }
+
+    // 완료 스타일 적용
+    function applyTodoStyle(span, checked) {
+      span.style.color = checked ? "gray" : "black";
+      span.style.textDecoration = checked ? "line-through" : "none";
+    }
+
+    // Todo 항목 하나를 <li>로 만들어서 화면에 추가
+    function renderTodoItem(todo) {
+      const li = document.createElement("li");
+
+      // 체크박스: 완료 여부 표시
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = !!todo.completed; // null/undefined → false로 변환
+
+      // 할 일 텍스트
+      const span = document.createElement("span");
+      span.textContent = todo.text + " ";
+      applyTodoStyle(span, checkbox.checked);
+
+      // 수정/삭제 버튼
+      const btnMod = document.createElement("button");
+      const btnDel = document.createElement("button");
+      btnMod.textContent = "수정";
+      btnDel.textContent = "삭제";
+
+      // <li>에 체크박스, 텍스트, 버튼들을 넣고 <ul>에 추가
+      li.append(checkbox, span, btnMod, btnDel);
+      list.appendChild(li);
+
+      // 이벤트 리스너 등록
+
+      // 체크박스 변경
+      checkbox.addEventListener("change", async () => {
+        // 먼저 화면에 스타일 적용 (낙관적 업데이트)
+        applyTodoStyle(span, checkbox.checked);
+        try {
+          // 서버에 완료 상태 변경 요청
+          await apiUpdateTodo(currentUserId, todo.id, { completed: checkbox.checked });
+          // 필터에 따라 보이기/숨기기 갱신
+          filterSelect();
+        } catch (err) {
+          // 실패하면 체크박스를 원래 상태로 되돌림
+          alert("완료 상태 업데이트 실패: " + err.message);
+          checkbox.checked = !checkbox.checked;
+          applyTodoStyle(span, checkbox.checked);
+        }
+      });
+
+      // 수정 버튼 클릭
+      btnMod.addEventListener("click", async () => {
+        const content = prompt("수정할 내용을 입력해 주세요!");
+        if (content === null) return;  // 취소 누르면 아무것도 안 함
+        if (content.trim() === "") {
+          alert("수정 실패! 다시 시도해 주세요.");
+          return;
+        }
+        try {
+          // 서버에 텍스트 수정 요청
+          await apiUpdateTodo(currentUserId, todo.id, { text: content.trim() });
+          // 성공하면 화면의 텍스트도 갱신
+          span.textContent = content.trim() + " ";
+          applyTodoStyle(span, checkbox.checked);
+        } catch (err) {
+          alert("수정 실패: " + err.message);
+        }
+      });
+
+      // 삭제 버튼 클릭
+      btnDel.addEventListener("click", async () => {
+        try {
+          await apiDeleteTodo(currentUserId, todo.id);
+          li.remove();                // DOM에서 해당 항목 삭제
+          filterSelect();             // 필터 갱신
+          await refreshUsers();       // 사용자별 todo 개수 갱신
+        } catch (err) {
+          alert("삭제 실패: " + err.message);
+        }
+      });
+    }
+
+    // Todo 목록 전체 로드
+    async function loadTodos() {
+      try {
+        list.innerHTML = "";  // 기존 목록 비우기
+        const todos = await apiGetTodos(currentUserId);  // 서버에서 todo 배열 조회
+        (todos || []).forEach(renderTodoItem);            // 하나씩 <li>로 렌더링
+        filterSelect();                                   // 현재 필터 적용
+      } catch (err) {
+        alert("목록 조회 실패: " + err.message);
+      }
+    }
+
+    // 할 일 추가
+    async function add() {
+      const input = txt.value.trim();
+      if (!input) {
+        alert("할 일을 입력해 주세요!");
+        return;
+      }
+      try {
+        await apiAddTodo(currentUserId, input);  // 서버에 새 todo 추가
+        txt.value = "";                          // 입력창 비우기
+        txt.focus();                             // 커서를 다시 입력창에
+        await loadTodos();                       // 목록 새로고침
+        await refreshUsers();                    // 사용자별 todo 개수 갱신
+      } catch (err) {
+        alert("추가 실패: " + err.message);
+      }
+    }
+
+    // 필터 기능
+    function filterSelect() {
+      // 현재 선택된 라디오 버튼의 value ("all" / "ing" / "complete")
+      const selected = document.querySelector("input[name='filter']:checked").value;
+
+      list.querySelectorAll("li").forEach((li) => {
+        // 해당 li 안의 체크박스가 체크되어 있는지 확인
+        // 체크됨 → 완료 상태, null → 진행중 상태
+        const checked = li.querySelector("input[type='checkbox']:checked");
+
+        if (selected === "all") {
+          li.style.display = "";       // 전체: 모두 보이기
+        } else if (selected === "ing") {
+          li.style.display = (checked === null) ? "" : "none";  // 진행중: 미완료만 보이기
+        } else {
+          li.style.display = (checked === null) ? "none" : "";  // 완료: 완료된 것만 보이기
+        }
+      });
+    }
+
+    // 사용자 추가
+    async function addUser() {
+      const uid = userIdInput.value.trim();
+      if (!uid) {
+        alert("user_id를 입력해 주세요.");
+        return;
+      }
+
+      currentUserId = uid;        // 현재 사용자를 입력한 ID로 변경
+      userIdInput.value = "";     // 입력창 비우기
+      userIdInput.focus();
+
+      // 이미 드롭다운에 있는 사용자인지 확인, 없으면 새 <option> 추가
+      if (![...userSelect.options].some(o => o.value === uid)) {
+        const opt = document.createElement("option");
+        opt.value = uid;
+        opt.textContent = `${uid} (0)`;
+        userSelect.appendChild(opt);
+      }
+
+      userSelect.value = uid;     // 드롭다운에서 해당 사용자 선택
+      await loadTodos();          // 해당 사용자의 todo 목록 로드
+    }
+
+    // 사용자 목록 새로고침
+    async function refreshUsers() {
+      try {
+        const userDict = await apiGetUsers();
+        renderUsers(userDict);
+      } catch (err) {
+        console.warn(err);
+        renderUsers({});
+      }
+    }
+
+    // 이벤트 바인딩
+    btnAdd.addEventListener("click", add);                                         // 추가 버튼 클릭
+    txt.addEventListener("keydown", (e) => { if (e.key === "Enter") add(); });     // 입력창에서 Enter
+    filters.forEach((radio) => { radio.addEventListener("change", filterSelect); }); // 필터 라디오 변경
+    userSelect.addEventListener("change", () => { currentUserId = userSelect.value; loadTodos(); }); // 사용자 드롭다운 변경
+    btnAddUser.addEventListener("click", addUser);                                 // 사용자 추가 버튼 클릭
+    userIdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") addUser(); }); // 사용자 입력창 Enter
+
+    // 초기화: 페이지 로드 시 즉시 실행
+    // 1) 서버에서 사용자 목록 가져와서 드롭다운 채우기
+    // 2) 현재 사용자의 todo 목록 불러오기
+    (async () => { await refreshUsers(); await loadTodos(); })();
+  </script>
+</body>
+</html>
