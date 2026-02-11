@@ -12,7 +12,7 @@
   <br><br>
   <input type="radio" name="filter" id="filter" value="all" checked> 전체
   <input type="radio" name="filter" id="filter" value="ing"> 진행중
-  <input type="radio" name="filter" id="filter" value="conplete"> 완료
+  <input type="radio" name="filter" id="filter" value="complete"> 완료
 
   <ul id="list"></ul>
 
@@ -21,6 +21,7 @@
     const txt = document.getElementById("txt");
     const btnAdd = document.getElementById("btnAdd");
     const list = document.getElementById("list");
+    const filters = document.querySelectorAll("input[name='filter']");
 
     // add 이벤트
     function add() {
@@ -111,6 +112,31 @@
     function checkEmpty() {
       p.style.display = list.children.length === 0 ? "block" : "none" ;
     }
+
+    // 전체, 진행중, 완료 필터 설정
+    function filterSelect() {
+      // 선택
+      const selected = document.querySelector("input[name='filter']:checked").value;
+      const todos = list.querySelectorAll("li");
+
+      todos.forEach((t) => {
+        const checked = t.querySelector("input[type='checkbox']:checked");
+
+        // 선택된 filter에 따라 출력을 다르게!
+        if (selected === "all") {
+          t.style.display = "";
+        } else if (selected === "ing") {
+          t.style.display = (checked !== null) ? "none" : "";
+        } else if (selected === "complete") {
+          t.style.display = (checked !== null) ? "" : "none";
+        }
+      });
+    }
+
+    // 필터에 대한 이벤트 핸들러
+    filters.forEach((radio) => {
+      radio.addEventListener("change", filterSelect);
+    });
   </script>
 </body>
 </html>
