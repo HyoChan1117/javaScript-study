@@ -1,0 +1,133 @@
+<!-- 
+과제!
+- 1단계: 코드 이해 (주석 작성: JS를 이용하여 HTML element 조정 방법 확인)
+- 2단계: “동일 기능”을 다른 구조로 재작성
+- 3단계: 기능 1개 “자유 확장” 
+-->
+
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>DOM CRUD Practice</title>
+</head>
+<body>
+  <h2>DOM CRUD (Add / Delete / Edit)</h2>
+
+  <input id="txt" type="input" placeholder="할 일을 입력" />
+  <button id="btnAdd">추가</button>
+
+  <ul id="list"></ul>
+
+  <script>
+    // id를 가져와 변수
+    const txtInput = document.getElementById("txt");
+    const btnAdd = document.getElementById("btnAdd");
+    const list = document.getElementById("list");
+
+    // createElement 호출해 item(li) 생성
+    btnAdd.addEventListener('click', () => {
+
+      const textValue = txtInput.value.trim();
+      if (!textValue) return;
+
+      const item = createElement({
+        tagName: 'li',
+        parent: list,
+        children: [
+        { tagName: 'span', properties: {'innerText': textValue } },
+        { tagName: 'input', properties: {'value': textValue } },
+        { tagName: 'button', properties: {'innerText': '수정' } },
+        { tagName: 'button', properties: {'innerText': '삭제' } },
+        { tagName: 'button', properties: {'innerText': '저징' } },
+        { tagName: 'button', properties: {'innerText': '취소' } },
+      ],
+    });
+
+    const [span, input, updateBtn, removeBtn, saveBtn, cancleBtn] = item.children;
+
+    // 취소, 저장 버튼 비활성화
+    input.style.display = 'none';
+    saveBtn.style.display = 'none';
+    cancleBtn.style.display = 'none';
+
+    // 삭제 처리
+    removeBtn.addEventListener('click', () => {
+        item.remove();
+    })
+
+    // 업데이트 처리
+    updateBtn.addEventListener('click', () => {
+        input.value = span.innerText;
+
+        span.style.display = "none";
+        input.style.display = "";
+
+        updateBtn.style.display = "none";
+        saveBtn.style.display = "";
+        cancleBtn.style.display = "";
+
+        removeBtn.disabled = true;
+
+        input.focus();
+    })
+
+    // 버튼 클릭 이벤트
+    saveBtn.addEventListener('click', () => {
+        const newValue = input.value.trim();
+        if (newValue) {
+            span.innerText = newValue;
+        }
+        txtInput.style.display = "";
+        input.style.display = "none";
+        updateBtn.style.display = '';
+        cancleBtn.style.display = 'none';
+        saveBtn.style.display = "none";
+
+        removeBtn.disabled = false;
+        
+        input.focus();
+    })
+
+    // 취소 버튼 처리
+    cancleBtn.addEventListener('click', () => {
+
+        txtInput.style.display = "";
+        input.style.display = "none";
+
+        updateBtn.style.display = "";
+        saveBtn.style.display = "none";
+        cancleBtn.style.display = "none";
+
+        removeBtn.disabled = false;
+    })
+
+    txtInput.focus();
+    txtInput.value = '';
+    });
+
+
+    // 엘리먼트 생성 함수
+    function createElement({
+      tagName,
+      properties,
+      parent,
+      children,
+      count = 1,
+    }) {
+        const element = document.createElement(tagName);
+        Object.assign(element, properties);
+
+        if (parent) parent.appendChild(element);
+
+        if (children) {
+            children.forEach(child => {
+                child.parent = element;
+                createElement(child);
+            });
+        }
+        return element;
+      }
+  </script>
+</body>
+</html>

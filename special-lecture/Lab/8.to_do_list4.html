@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-do List</title>
+</head>
+<body>
+  <h2>To-do List</h2>
+
+  <input type="text" id="txt">
+  <button id="btnAdd">추가</button>
+
+  <br><br>
+
+  <input type="radio" name="filter" value="all" checked> 전체
+  <input type="radio" name="filter" value="ing"> 진행중
+  <input type="radio" name="filter" value="complete"> 완료
+
+  <hr>
+
+  <ul id="list"></ul>
+
+<script>
+  // DOM 요소 가져오기
+  const txt = document.getElementById("txt");
+  const btnAdd = document.getElementById("btnAdd");
+  const list = document.getElementById("list");
+  const filters = document.querySelector("input[name='filter']");
+
+  // add 이벤트
+  function add() {
+    // txt.value 가져와서 input에 저장
+    const input = txt.value.trim();
+
+    // input이 빈 값일 경우
+    // 에러 메시지 출력 후 add 이벤트 종료
+    if (!input) {
+      alert("빈 값을 입력할 수 없습니다.");
+      return;
+    }
+    // li 요소 생성
+    // checkbox 요소 생성
+    // span 요소 생성
+    const li = document.createElement("li");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    const span = document.createElement("span");
+
+    // 수정, 삭제 버튼 요소 생성
+    const btnMod = document.createElement("button");
+    const btnDel = document.createElement("button");
+    btnMod.textContent = "수정";
+    btnDel.textContent = "삭제";
+
+    // span 요소의 textContent에 input 요소 저장
+    span.textContent = input + " ";
+
+    // li 요소의 자식 요소에 span, btnMod, btnDel 요소 추가
+    li.append(checkbox, span, btnMod, btnDel);
+
+    // list 요소의 자식 요소에 li 요소 추가
+    list.appendChild(li);
+
+    // 체크박스 이벤트 리스너
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        span.style.color = "gray";
+        span.style.textDecoration = "line-through";
+      } else {
+        span.style.color = "black";
+        span.style.textDecoration = "none";
+      }
+    });
+
+    // 수정 이벤트 리스너
+    btnMod.addEventListener("click", () => {
+      const modify = prompt("수정할 내용을 입력해 주세요.").trim();
+      
+      // 수정할 내용이 빈 값일 경우
+      // 에러 메시지 출력 후 수정 이벤트 종료
+      if (modify === "") {
+        alert("빈 값입니다. 수정할 내용을 입력해 주세요!")
+        return;
+      }
+
+      // 입력한 내용 span 요소에 반영하기
+      span.textContent = modify + " ";
+    });
+
+    // 삭제 이벤트 리스너
+    btnDel.addEventListener("click", () => {
+      const ok = confirm("정말 삭제하시겠습니까?");
+
+      // 취소할 경우 삭제 이벤트 종료
+      if (!ok) return;
+
+      li.remove();
+    });
+
+    // txt.value 초기화
+    txt.value = "";
+
+    // txt.focus()
+    txt.focus();
+  }
+
+  // 이벤트 리스너
+  // btnAdd (click)
+  btnAdd.addEventListener("click", add);
+
+  // txt (keydown)
+  txt.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") add();
+  });
+
+  // 필터
+  filters.addEventListener
+  const todos = document.querySelectorAll("li");
+  
+  console.log(todos);
+
+</script>
+</body>
+</html>

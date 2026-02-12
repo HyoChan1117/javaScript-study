@@ -6,7 +6,7 @@
 <body>
 
 <button onclick="run()">비동기 처리</button>
-<input placeholder="여기에 타이핑 해보세요" />
+<input id="txt" placeholder="여기에 타이핑 해보세요" />
 
 <script>
   function makeDelay(argMs) {
@@ -26,6 +26,12 @@
   console.log("1. 시작");
   // 출력 순서: 1 → 3 → (3초 후) 2
   // 버튼을 누른 뒤 input에 타이핑이 가능 (UI가 멈추지 않음)
+
+  const txt = document.getElementById("txt");
+
+  txt.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") run();
+  });
 </script>
 
 </body>
