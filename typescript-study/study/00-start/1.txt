@@ -1,0 +1,22 @@
+프로젝트 생성 후
+1. npm init -y
+→ package.json 생성
+
+2. npm install -D typescript
+
+3. npx tsc --init
+→ tsconfig.json 생성
+
+4. 파일 작성
+
+5. 컴파일 및 실행
+→ 옛날 실행 방식
+    TypeScript는 브라우저나 Node가 직접 이해하지 못해서 다음과 같은 흐름으로 흘러간다.
+.ts → TypeScript Compiler: tsc → .js → node 실행
+
+→ 요즘 방식
+    1. ts-node
+    npx ts-node "TypeScript 파일명"
+
+    2. tsx (요즘 많이 씀)
+    npx tsx "TypeScript 파일명"
